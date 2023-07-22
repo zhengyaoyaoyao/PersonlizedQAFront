@@ -1,0 +1,29 @@
+.header {
+  height: 64;
+  padding-inline: 50;
+  line-height: '64px';
+  display: flex;
+  align-items: center;
+  background: beige;
+}
+.content {
+  text-align: 'center';
+  min-height: 120;
+  line-height: '120px';
+  color: '#fff';
+}
+.main {
+  margin: 2%;
+}
+.datatask {
+  width: 100%;
+}
+.search {
+  margin-left: auto;
+}
+.tasklist {
+  text-align: left;
+  margin: 10px;
+  font-weight: bold;
+  font-size: 20px;
+}
