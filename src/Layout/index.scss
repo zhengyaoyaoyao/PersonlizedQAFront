@@ -1,3 +1,4 @@
+$bold-font-weight: bold;
 .logo {
   width: 200px;
   height: 60px;
@@ -12,13 +13,15 @@
 }
 .title {
   display: flex;
-  font-weight: 500;
-  font-size: 20px;
-  line-height: 28px;
+  font-weight: $bold-font-weight;
+  font-size: 25px;
+  line-height: 30px;
   align-items: center;
+  padding-left: 12px;
 }
 .sider {
   height: 100vh;
+  text-align: left;
 }
 .userInfo {
   display: flex;
@@ -31,4 +34,14 @@
   background: white;
   padding: 16px; /* 根据需要设置顶部和底部的内边距 */
   justify-content: space-between; /* 左右对齐 */
+}
+.outlogin {
+  cursor: pointer;
+}
+.menu {
+  height: 100%;
+  border-right: 1;
+}
+.ant-menu-title-content {
+  padding-left: 14px;
 }

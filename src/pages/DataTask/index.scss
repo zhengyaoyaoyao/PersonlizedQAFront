@@ -1,10 +1,9 @@
 .header {
-  height: 64;
-  padding-inline: 50;
-  line-height: '64px';
   display: flex;
   align-items: center;
   background: beige;
+  justify-content: space-between;
+  padding: 0 20px;
 }
 .content {
   text-align: 'center';
@@ -15,11 +14,15 @@
 .main {
   margin: 2%;
 }
+.search {
+  margin-right: 10px;
+}
+.new {
+  margin-left: 20px;
+  margin-right: 50px;
+}
 .datatask {
   width: 100%;
-}
-.search {
-  margin-left: auto;
 }
 .tasklist {
   text-align: left;

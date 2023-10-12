@@ -131,6 +131,9 @@ const Log = () => {
   return (
     <div>
       <Layout className="main">
+        <div style={{ background: 'white' }}>
+          <Content className="tasklist">日志信息</Content>
+        </div>
         <Content className="content">
           <Table
             columns={columns}

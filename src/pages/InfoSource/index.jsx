@@ -27,7 +27,7 @@ const InfoSource = () => {
   const onUpdate = (data) => {
     setIsCreate(false)
     console.log(data)
-    debugger
+
     form.setFieldValue('infoSourceName', data.infoSourceName)
     form.setFieldValue('infoSourceUrl', data.infoSourceUrl)
     let infoSourceRuleJSON = {}
@@ -41,10 +41,10 @@ const InfoSource = () => {
       json: infoSourceRuleJSON,
       text: undefined,
     })
-    form.setFieldValue('infoSourceRule', {
-      json: infoSourceRuleJSON,
-      text: undefined,
-    })
+    // form.setFieldValue('infoSourceRule', {
+    //   json: infoSourceRuleJSON,
+    //   text: undefined,
+    // })
     form.setFieldValue('infoSourceDesc', data.infoSourceDesc)
     form.setFieldValue('id', data.key)
     showDrawer()
@@ -158,12 +158,14 @@ const InfoSource = () => {
   }
   //提交表单前对json进行验证
   const onValide = (values) => {
-    debugger
-    const rule = values.infoSourceRule.text
     try {
-      JSON.parse(rule)
+      if (jsonContent?.text) {
+        JSON.parse(jsonContent?.text)
+      }
+      console.log('content内容：', jsonContent)
       onFinish(values)
     } catch (error) {
+      console.log('错误信息:', error)
       setIsValidate(true)
       message.error('输入正确的json内容')
       setIsValidate(false)
@@ -171,12 +173,18 @@ const InfoSource = () => {
   }
   //提交表单
   const onFinish = async (values) => {
-    console.log('提交的表单：', values)
-    debugger
+    console.log('提交的表单：', typeof jsonContent)
     const formData = new FormData()
     formData.append('infoSourceName', values.infoSourceName)
     formData.append('infoSourceUrl', values.infoSourceUrl)
-    formData.append('infoSourceRule', values.infoSourceRule.text)
+    // formData.append('infoSourceRule', values.infoSourceRule.text)
+    formData.append(
+      'infoSourceRule',
+      jsonContent?.hasOwnProperty('json')
+        ? JSON.stringify(jsonContent.json)
+        : jsonContent.text
+    )
+
     formData.append('infoSourceDesc', values.infoSourceDesc)
     if (isCreate) {
       const response = await http.post('/infosource/insert', formData)
@@ -215,30 +223,39 @@ const InfoSource = () => {
       title: '序号',
       dataIndex: 'number',
       key: 'number',
+      fixed: 'left',
+      width: '5%',
     },
     {
       title: '信源名称',
       dataIndex: 'infoSourceName',
       key: 'infoSourceName',
+      width: '13%',
+      fixed: 'left',
     },
     {
       title: '信源链接',
       dataIndex: 'infoSourceUrl',
       key: 'infoSourceUrl',
+      width: '20%',
     },
     {
       title: '备注',
       dataIndex: 'infoSourceDesc',
       key: 'infoSourceDesc',
+      width: '25%',
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       key: 'createTime',
+      width: '15%',
     },
     {
       title: '操作',
       key: 'action',
+      width: '17%',
+      fixed: 'right',
       render: (data) => (
         <Space size="middle">
           {checkFunction(
@@ -272,7 +289,7 @@ const InfoSource = () => {
     console.log(data)
     const id = data.key
     let infoSourceRuleJSON = {}
-    debugger
+
     try {
       infoSourceRuleJSON = JSON.parse(data.infoSourceRule)
     } catch (error) {
@@ -347,7 +364,6 @@ const InfoSource = () => {
     setOpenDetail(false)
   }
   //json设置
-  const [showEditor, setShowEditor] = useState(true)
   const [jsonContent, setJsonContent] = useState({
     json: {},
     text: undefined,
@@ -356,25 +372,26 @@ const InfoSource = () => {
   return (
     <div className="datatask">
       <Layout className="main">
+        <div style={{ background: 'white' }}>
+          <Content className="tasklist">信源列表</Content>
+        </div>
         <Header className="header">
+          <Search
+            className="search"
+            placeholder="信源名称"
+            onSearch={onSearch}
+          />
           {checkFunction(
-            <Button type="primary" onClick={goNew}>
+            <Button className="new" type="primary" onClick={goNew}>
               新建
             </Button>,
             '11004'
           )}
-          <Search
-            className="search"
-            placeholder="信源名称"
-            style={{
-              width: 200,
-            }}
-            onSearch={onSearch}
-          />
         </Header>
-        <Content className="tasklist">信源列表</Content>
+
         <Content className="content">
           <Table
+            scroll={{ x: 1300 }}
             dataSource={infoSource.list}
             columns={columns}
             pagination={{ position: ['none', 'none'] }}

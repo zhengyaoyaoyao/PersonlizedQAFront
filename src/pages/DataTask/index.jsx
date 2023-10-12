@@ -13,7 +13,6 @@ import './index.scss'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { http } from '../../utils'
-import { checkFunction, hasPermission } from '../../utils/authFunction'
 
 const { Header, Content } = Layout
 const DataTask = () => {
@@ -152,13 +151,9 @@ const DataTask = () => {
       key: 'action',
       render: (_, index, record) => (
         <Space size="middle">
-          <Button onClick={() => goDetailInfo(index)} size="small">
-            详情
-          </Button>
-          <Button onClick={() => goAnnotation(index)} size="small">
-            标注
-          </Button>
-          <Button onClick={() => goDelete(index)} danger size="small">
+          <Button onClick={() => goDetailInfo(index)}>详情</Button>
+          <Button onClick={() => goAnnotation(index)}>标注</Button>
+          <Button onClick={() => goDelete(index)} danger>
             删除
           </Button>
         </Space>
@@ -182,23 +177,10 @@ const DataTask = () => {
   return (
     <div className="datatask">
       <Layout className="main" style={{ background: 'beige' }}>
+        <div style={{ background: 'white' }}>
+          <Content className="tasklist">任务列表</Content>
+        </div>
         <Header className="header">
-          {checkFunction(
-            <Button type="primary" onClick={goNew}>
-              新建
-            </Button>,
-            '11'
-          )}
-          <Button
-            type="primary"
-            onClick={goNew}
-            disabled={hasPermission('111')}>
-            新建
-          </Button>
-
-          <Button type="primary" onClick={goNew} disabled>
-            新建
-          </Button>
           <Search
             className="search"
             placeholder="根据任务名称进行搜索"
@@ -207,8 +189,11 @@ const DataTask = () => {
             }}
             onSearch={onSearch}
           />
+          <Button className="new" type="primary" onClick={goNew}>
+            新建
+          </Button>
         </Header>
-        <Content className="tasklist">任务列表</Content>
+
         <Content className="content">
           <Table
             dataSource={tasks.list}

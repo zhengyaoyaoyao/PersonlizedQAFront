@@ -99,9 +99,13 @@ const TaskFiles = () => {
               </Popconfirm>,
             ]}>
             <List.Item.Meta
-              title={item.fileName}
+              title={
+                <div style={{ textAlign: 'left', paddingLeft: 24 }}>
+                  {item.fileName}
+                </div>
+              }
               description={
-                <div>
+                <div style={{ textAlign: 'left', paddingLeft: 24 }}>
                   创建时间：
                   {moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}
                   <br />

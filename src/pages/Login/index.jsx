@@ -1,25 +1,17 @@
-import {
-  AlipayCircleOutlined,
-  LockOutlined,
-  MobileOutlined,
-  TaobaoCircleOutlined,
-  UserOutlined,
-  WeiboCircleOutlined,
-} from '@ant-design/icons'
+import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons'
 import {
   LoginForm,
   ProConfigProvider,
   ProFormCaptcha,
-  ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components'
-import { message, Space, Tabs } from 'antd'
+import { message, Tabs } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import './index.scss'
 import { useStore } from '../../store/index'
 import { usePageRoutes } from '../../routes/pageRoutes'
-
+import logo from '../../assets/Octocat.png'
 const Login = () => {
   const navigate = useNavigate()
   const { menuRoutes } = usePageRoutes()
@@ -40,11 +32,11 @@ const Login = () => {
     message.error('请联系管理员')
   }
   return (
-    <div>
+    <div className="loginContainer">
       <ProConfigProvider hashed={false}>
-        <div style={{ backgroundColor: 'white' }}>
+        <div>
           <LoginForm
-            logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
+            logo={logo}
             title="数据采集平台"
             subTitle="个性化问答数据、模型仓库"
             onFinish={onFinish}>

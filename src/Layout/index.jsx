@@ -1,12 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import './index.scss'
-import {
-  UserOutlined,
-  LogoutOutlined,
-  PoweroffOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-} from '@ant-design/icons'
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
 import { Layout, Menu, theme, Popconfirm, Space, Button } from 'antd'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
@@ -14,7 +8,7 @@ import { InnerRouters } from '../routes/index'
 import { observer } from 'mobx-react-lite'
 import { usePageRoutes } from '../routes/pageRoutes'
 
-const { Header, Content, Footer, Sider } = Layout
+const { Header, Content, Sider } = Layout
 
 const setMenuKeys = (paths, end) => `/${paths.slice(0, end).join('/')}`
 
@@ -57,26 +51,10 @@ const DataLayout = () => {
       // const hasSubMenu = menu.subRoute?.length > 0
       const Icon = menu.icon
       const icon = Icon ? Icon : null
-
       if (menu.hideMenu) {
         return null
       }
-
       return getItem(menu.title, menu.path, icon)
-
-      // if (hasSubMenu) {
-      //   const submenu = menu.subRoute
-      //     .map((sub) => {
-      //       if (sub?.hideMenu) {
-      //         return null
-      //       }
-      //       return getItem(sub.title, `${sub.path}`)
-      //     })
-      //     .filter(Boolean)
-      //   return getItem(menu.title, menu.path, icon, submenu)
-      // } else {
-      //   return getItem(menu.title, menu.path, icon)
-      // }
     })
   }
 
@@ -110,7 +88,7 @@ const DataLayout = () => {
               </div>
               <Space size={'middle'}>
                 <span>用户:{userStore.userInfo.nickName}</span>
-                <span>
+                <span className="outlogin">
                   <Popconfirm
                     onConfirm={onConfirm}
                     title="是否确认退出？"
@@ -124,14 +102,14 @@ const DataLayout = () => {
           </div>
         </Header>
         <Layout>
-          <Sider className="sider" height={500} width={200}>
+          <Sider className="sider">
             <Menu
+              className="menu"
               mode="inline"
               theme="light"
               openKeys={openKeys}
               selectedKeys={selectedKeys}
               onOpenChange={onOpenChange}
-              style={{ height: '100%', borderRight: 0 }}
               items={renderItems(menuRoutes)}
               onClick={({ item, key, keyPath }) => onClick(keyPath)}></Menu>
           </Sider>
@@ -139,12 +117,6 @@ const DataLayout = () => {
             <InnerRouters />
           </Content>
         </Layout>
-        {/* <Footer
-          style={{
-            textAlign: 'center',
-          }}>
-          Ant Design ©2023 Created by Ant UED
-        </Footer> */}
       </Layout>
     )
   )

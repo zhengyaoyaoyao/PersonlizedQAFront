@@ -302,20 +302,20 @@ const UserManage = () => {
   return (
     <div className="datatask">
       <Layout className="main" style={{ background: 'beige' }}>
+        <div style={{ background: 'white' }}>
+          <Content className="tasklist">成员管理</Content>
+        </div>
         <Header className="header">
-          <Button type="primary" onClick={goNew}>
-            新建
-          </Button>
           <Search
             className="search"
             placeholder="根据用户名搜索"
-            style={{
-              width: 200,
-            }}
             onSearch={onSearch}
           />
+          <Button className="new" type="primary" onClick={goNew}>
+            新建
+          </Button>
         </Header>
-        <Content className="tasklist">成员管理</Content>
+
         <Content className="content">
           <Table
             dataSource={users.list}

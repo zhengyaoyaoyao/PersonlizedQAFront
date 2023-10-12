@@ -9,8 +9,6 @@ import {
   Drawer,
   Form,
   Select,
-  DatePicker,
-  Card,
   Modal,
   Switch,
   message,
@@ -19,15 +17,16 @@ import {
   Descriptions,
   Tag,
   Upload,
+  Dropdown,
 } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { UploadOutlined } from '@ant-design/icons'
+import { UploadOutlined, DownOutlined } from '@ant-design/icons'
 import { http } from '../../utils'
 import moment from 'moment'
 import JSONEditorReact from '../../components/JSONEditorReact'
 import { checkFunction, hasPermission } from '../../utils/authFunction'
+import './index.scss'
 const { Header, Content } = Layout
-const { RangePicker } = DatePicker
 const colors = [
   'magenta',
   'red',
@@ -58,9 +57,7 @@ const Task = () => {
         `/infosource/getByName?infoSourceName=${data.infoSourceName}`
       )
     ).data.data
-    debugger
     let infoSourceRuleJSON = {}
-    debugger
     try {
       infoSourceRuleJSON = JSON.parse(data.infoSourceRule)
     } catch (error) {
@@ -206,7 +203,6 @@ const Task = () => {
   const onUpdate = (data) => {
     setIsCreate(false)
     console.log('具体信息', data)
-    debugger
     let infoSourceRuleJSON = {}
     try {
       infoSourceRuleJSON = JSON.parse(data.infoSourceRule)
@@ -223,13 +219,6 @@ const Task = () => {
     form.setFieldValue('taskName', data.taskName)
     form.setFieldValue('taskCollectionName', data.taskCollectionName)
     form.setFieldValue('charge', data.charge)
-    form.setFieldValue(
-      'infoSourceRule',
-      setInfoSourcesRule({
-        json: infoSourceRuleJSON,
-        text: undefined,
-      })
-    )
     form.setFieldValue('taskTime', data.taskTime)
     form.setFieldValue('status', data.status)
     form.setFieldValue('infoSource', infoSourceId)
@@ -246,45 +235,39 @@ const Task = () => {
       title: '序号',
       dataIndex: 'number',
       key: 'number',
+      fixed: 'left',
+      width: '5%',
     },
     {
       title: '任务名称',
       dataIndex: 'taskName',
       key: 'taskName',
-      render: (text, data) => {
-        console.log('text:', text)
-        console.log('data:', data)
-        const id = data.key
-        return (
-          <>
-            {hasPermission('10005') ? (
-              <a onClick={() => goDetail(id)}>{text}</a>
-            ) : (
-              text
-            )}
-          </>
-        )
-      },
+      width: '20%',
+      fixed: 'left',
     },
     {
       title: '任务负责人',
       dataIndex: 'charge',
       key: 'charge',
+      width: '8%',
     },
     {
       title: '任务信源',
       dataIndex: 'infoSourceName',
       key: 'infoSourceName',
+      width: '20%',
     },
     {
       title: '任务时间安排',
       dataIndex: 'taskTime',
       key: 'taskTime',
+      width: '15%',
     },
     {
       title: '任务状态',
       dataIndex: 'status',
       key: 'status',
+      width: '7%',
       render: (data) => {
         const status = data
         return status ? (
@@ -297,8 +280,9 @@ const Task = () => {
     {
       title: '操作',
       key: 'action',
+      width: '25%',
       render: (data) => (
-        <Space size="middle">
+        <Space size="middle" align="center">
           {checkFunction(
             <Button onClick={() => onUpdate(data)}>更新</Button>,
             '10002'
@@ -309,8 +293,34 @@ const Task = () => {
             </Button>,
             '10003'
           )}
-          <Button onClick={() => openDetailDrawer(data)}>详情</Button>
-          <Button onClick={() => openDrawerUpload(data)}>上传</Button>
+          {checkFunction(
+            <Button onClick={() => goDetail(data.key)}>审核</Button>,
+            '10005'
+          )}
+
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: '1',
+                  label: <a onClick={() => openDetailDrawer(data)}>详情</a>,
+                },
+                {
+                  key: '2',
+                  label: <a onClick={() => openDrawerUpload(data)}>上传</a>,
+                },
+                {
+                  key: '3',
+                  label: (
+                    <a onClick={() => openDrawerAttachFile(data)}>附件上传</a>
+                  ),
+                },
+              ],
+            }}>
+            <Button>
+              更多<DownOutlined></DownOutlined>
+            </Button>
+          </Dropdown>
         </Space>
       ),
     },
@@ -377,7 +387,6 @@ const Task = () => {
   }
 
   //处理新建
-
   const [open, setOpen] = useState(false)
   const [user, setUser] = useState()
   const showDrawer = () => {
@@ -414,6 +423,7 @@ const Task = () => {
         JSON.parse(rule)
         onFinish(values)
       } catch (error) {
+        console.log('错误信息：', error)
         setIsValidate(true)
         message.error('请输入正确的json内容')
         setIsValidate(false)
@@ -426,7 +436,6 @@ const Task = () => {
   const onFinish = async (values) => {
     setUpdating(true)
     console.log('表单提交信息：', values)
-    debugger
     const formData = new FormData()
     formData.append('taskName', values.taskName)
     formData.append('charge', values.charge)
@@ -607,7 +616,6 @@ const Task = () => {
   const goUpload = async (formData) => {
     setUploading(true)
     try {
-      debugger
       const response = await http.post('/task/uploadFiles', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -633,30 +641,91 @@ const Task = () => {
   }
   //控件异步控制
   const [updating, setUpdating] = useState(false)
+
+  //附件信息转化
+  const [uploadAttachDrawerStatus, setuploadAttachDrawerStatus] =
+    useState(false)
+  const openDrawerAttachFile = (data) => {
+    if (data) {
+      console.log(data)
+      setuploadAttachDrawerStatus(true)
+      setUpDataFile(data)
+    }
+  }
+  const onCloseUpAttach = () => {
+    setuploadAttachDrawerStatus(false)
+  }
+  const handleUploadAttach = (upDataFile) => {
+    const formData = new FormData()
+    fileList.forEach((file) => {
+      formData.append('files', file)
+    })
+    console.log(upDataFile)
+    //对应的任务，要存进去的集合
+    formData.append('id', upDataFile.key)
+    formData.append('taskCollectionName', upDataFile.taskCollectionName)
+    goUploadAttach(formData)
+  }
+  const goUploadAttach = async (formData) => {
+    setUploading(true)
+    try {
+      const response = await http.post('/task/uploadAttachs', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        responseType: 'blob',
+      })
+      // console.log('上传的附件信息:', response.data.data)
+      console.log(response)
+      // 创建 Blob 对象并下载文件
+      const blob = new Blob([response.data], {
+        type: 'application/octet-stream',
+      })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'attachInfo.txt' // 设置下载文件名
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      setFileList([])
+      message.success('注意查看附件信息')
+    } catch (error) {
+      message.error('upload failed.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <div>
       <Layout className="main">
+        <div style={{ background: 'white' }}>
+          <Content className="tasklist">任务列表</Content>
+        </div>
         <Header className="header">
+          <Search
+            className="search"
+            placeholder="任务名称"
+            onSearch={onSearch}
+          />
           {checkFunction(
-            <Button type="primary" onClick={goNew} loading={updating}>
+            <Button
+              className="new"
+              type="primary"
+              onClick={goNew}
+              loading={updating}>
               新建
             </Button>,
             '10004'
           )}
-          <Search
-            className="search"
-            placeholder="任务名称"
-            style={{
-              width: 200,
-            }}
-            onSearch={onSearch}
-          />
         </Header>
-        <Content className="tasklist">任务列表</Content>
+
         <Content className="content">
           <Table
             columns={columns}
             dataSource={Tasks.list}
+            scroll={{ x: 1300 }}
             pagination={{ position: ['none', 'none'] }}
           />
           <Pagination
@@ -787,6 +856,26 @@ const Task = () => {
               <Button
                 type="primary"
                 onClick={() => handleUpload(upDataFile)}
+                disabled={fileList.length === 0}
+                loading={uploading}
+                style={{ marginTop: 16 }}>
+                {uploading ? 'Uploading' : 'Start Upload'}
+              </Button>
+            </>
+          </Drawer>
+          <Drawer
+            title="上传附件"
+            width={500}
+            onClose={onCloseUpAttach}
+            placement="right"
+            open={uploadAttachDrawerStatus}>
+            <>
+              <Upload {...props}>
+                <Button icon={<UploadOutlined />}>上传附件</Button>
+              </Upload>
+              <Button
+                type="primary"
+                onClick={() => handleUploadAttach(upDataFile)}
                 disabled={fileList.length === 0}
                 loading={uploading}
                 style={{ marginTop: 16 }}>

@@ -6,7 +6,8 @@ import { getToken } from "./index"
 import { message } from "antd"
 
 const http = axios.create({
-  baseURL: 'http://192.168.0.108:9090',
+  // baseURL: 'http://192.168.0.111:9090',
+  baseURL: 'http://8.134.179.176:9090',
   timeout: 10000
 })
 
